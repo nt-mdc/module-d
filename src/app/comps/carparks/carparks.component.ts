@@ -38,4 +38,8 @@ export class CarparksComponent implements OnInit {
       }
     );
   }
+
+  log(item:any){
+    console.log(item);
+  }
 }

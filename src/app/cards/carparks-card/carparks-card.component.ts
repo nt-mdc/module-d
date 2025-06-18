@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-carparks-card',
@@ -10,4 +10,6 @@ export class CarparksCardComponent {
   @Input() title: string = 'Default';
   @Input() location: string = 'Default';
   @Input() parks: string = 'Default';
+
+  @Output() cardClick = new EventEmitter<string>();
 }
