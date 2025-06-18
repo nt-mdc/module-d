@@ -1,0 +1,24 @@
+<footer
+  class="w-100"
+>
+  <nav class="navbar navbar-expand bg-body-tertiary w-100">
+    <div class="container-fluid d-flex flex-row justify-content-center">
+      <div class="navbar" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" (click)="nav.emit('carparks')">Carparks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="nav.emit('events')">Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="nav.emit('weather')">Weather</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="nav.emit('setting')">Setting</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</footer>
