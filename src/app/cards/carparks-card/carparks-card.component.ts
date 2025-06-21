@@ -11,6 +11,8 @@ export class CarparksCardComponent {
   @Input() title: string = 'Default';
   @Input() location: string = 'Default';
   @Input() parks: string = 'Default';
+  @Input() lat: number = 0;
+  @Input() long: number = 0;
 
   isClicked =  false;
 

@@ -1,4 +1,4 @@
-<div [ngClass]="{' ': isClicked}" class="card" (click)="parkClick()">
+<div [ngClass]="{' ': isClicked}" class="card" (click)="cardClick.emit(`{'title': ${title},'location': ${location},'parks':${parks},'latitude': ${lat},'longitude': ${long}}`)">
   <div class="card-body">
     <h5 class="card-title">{{title}}</h5>
     <p class="card-text">Available Spaces: {{parks}}</p>

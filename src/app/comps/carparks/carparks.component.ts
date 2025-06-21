@@ -24,6 +24,7 @@ export class CarparksComponent implements OnInit {
         name,
         ...(values as any),
       })).sort((a,b) => a.name.localeCompare(b.name));
+
     });
   }
 
