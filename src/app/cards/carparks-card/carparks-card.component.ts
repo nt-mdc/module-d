@@ -12,13 +12,26 @@ export class CarparksCardComponent {
   @Input() location: string = 'Default';
   @Input() parks: string = 'Default';
   @Input() lat: number = 0;
-  @Input() long: number = 0;
+  @Input() long: any = 0;
+  @Input() isPinned: boolean = false;
 
-  isClicked =  false;
+  @Output() cardClick = new EventEmitter<any>();
+  @Output() pinClick = new EventEmitter<void>();
 
-  @Output() cardClick = new EventEmitter<string>();
 
-  parkClick() {
-    this.isClicked = !this.isClicked;
+  onCardClick() {
+    this.cardClick.emit({
+      'title': this.title,
+      'location': this.location,
+      'parks': this.parks,
+      'latitude': this.lat,
+      'longitude': this.long
+    })
   }
+
+  onPinClick(event: MouseEvent) {
+    event.stopPropagation();
+    this.pinClick.emit();
+  }
+
 }
