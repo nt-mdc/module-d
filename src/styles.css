@@ -1,1 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+.svg {
+    max-width: 65vw;
+    max-height: 65vw;
+  }
+  .svg path {
+    stroke: #1c3e60;
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 200;
+    transition: stroke-dasharray .4s ease;
+  }
+  
+  /* Efeito ao passar o mouse */
+  .svg:hover path {
+    animation: draw-stroke 2s forwards;
+  }
+  
+  @keyframes draw-stroke {
+    0% {
+      stroke-dasharray: 50;
+      stroke-dashoffset: 200;
+    }
+    100% {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 0;
+    }
+  }
+  

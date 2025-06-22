@@ -1,4 +1,4 @@
-<div *ngIf="!focusedCarpark; else singleView" class="pt-3 overflow-auto d-flex flex-column gap-3 w-100">
+<div *ngIf="!focusedCarpark; else singleView" class="pt-3 overflow-auto d-flex flex-column gap-3 w-100 h-100">
   <app-carparks-card (pinClick)="togglePin(item)" (cardClick)="focusOnCarpark($event)" *ngFor="let item of displayCarparks" [location]="item.location"
     [title]="item.name" [parks]="item.availableSpaces" [lat]="item.latitude" [long]="item.longitude" [isPinned]="item.isPinned"></app-carparks-card>
 </div>

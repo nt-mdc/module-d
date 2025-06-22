@@ -5,6 +5,7 @@ import { CarparksCardComponent } from '../../cards/carparks-card/carparks-card.c
 import { CommonModule } from '@angular/common';
 import { CarparksSingleComponent } from '../../cards/carparks-single/carparks-single.component';
 import { PinningService } from '../../services/pinning.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-carparks',
@@ -27,31 +28,77 @@ export class CarparksComponent implements OnInit {
 
   constructor(
     private carparkService: CarparksService,
-    private pinningService: PinningService
+    private pinningService: PinningService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.getCurrentLocation();
-    this.carparkService.get().subscribe((data) => {
-      this.allCarparks = Object.entries(data)
-        .map(([name, values]) => ({
+    this.route.queryParams.subscribe((params) => {
+      const urlLat = params['latitude'];
+      const urlLong = params['longitude'];
+
+      if (urlLat && urlLong) {
+        this.lat = parseFloat(urlLat);
+        this.long = parseFloat(urlLong);
+        console.log(this.lat, this.long);
+        
+      } else {
+        console.log(this.lat, this.long);
+
+        this.getCurrentLocation();
+      }
+
+      this.carparkService.get().subscribe((data) => {
+        this.allCarparks = Object.entries(data).map(([name, values]) => ({
           name,
           ...(values as any),
-          isPinned: this.pinningService.isPinned(name)
+          isPinned: this.pinningService.isPinned(name),
         }));
         this.sortCarparks();
+      });
     });
   }
 
   sortCarparks() {
-    const pinned = this.allCarparks.filter(c => c.isPinned).sort((a,b) => a.name.localeCompare(b.name));
+    const pinned = this.allCarparks
+      .filter((c) => c.isPinned)
+      .sort((a, b) => this.sortMethod(a, b));
 
-    const unpinned = this.allCarparks.filter(c => !c.isPinned).sort((a,b) => a.name.localeCompare(b.name));
+    const unpinned = this.allCarparks
+      .filter((c) => !c.isPinned)
+      .sort((a, b) => this.sortMethod(a, b));
 
     this.displayCarparks = [...pinned, ...unpinned];
   }
 
-  togglePin(carpark: any){
+  sortMethod(a: any, b: any) {
+    if (this.carparkService.getMethod() == 'alphabet') {
+      return a.name.localeCompare(b.name);
+    } else {
+      a.distance =
+        Math.round(
+          this.getDistanceFromLatLonInKm(
+            this.lat,
+            this.long,
+            a.latitude,
+            a.longitude
+          ) * 100
+        ) / 100;
+
+      b.distance =
+        Math.round(
+          this.getDistanceFromLatLonInKm(
+            this.lat,
+            this.long,
+            b.latitude,
+            b.longitude
+          ) * 100
+        ) / 100;
+      return a.distance - b.distance;
+    }
+  }
+
+  togglePin(carpark: any) {
     if (this.pinningService.isPinned(carpark.name)) {
       this.pinningService.unpin(carpark.name);
       carpark.isPinned = false;
@@ -68,19 +115,28 @@ export class CarparksComponent implements OnInit {
       (loc) => {
         this.lat = loc.coords.latitude;
         this.long = loc.coords.longitude;
-      },
-      () => {
-        alert('fail');
-      }
-    );
+      });
   }
 
   focusOnCarpark(carparkData: any) {
-    carparkData['distance'] =  Math.round(this.getDistanceFromLatLonInKm(this.lat, this.long, carparkData.latitude, carparkData.longitude) * 100) / 100;
+    carparkData['distance'] =
+      Math.round(
+        this.getDistanceFromLatLonInKm(
+          this.lat,
+          this.long,
+          carparkData.latitude,
+          carparkData.longitude
+        ) * 100
+      ) / 100;
     this.focusedCarpark = carparkData;
   }
 
-  getDistanceFromLatLonInKm(latitude1: any, longitude1: any, latitude2: any, longitude2: any) {
+  getDistanceFromLatLonInKm(
+    latitude1: any,
+    longitude1: any,
+    latitude2: any,
+    longitude2: any
+  ) {
     var R = 6371; // Radius of the earth in km
     var dLat = this.deg2rad(latitude2 - latitude1); // deg2rad below
     var dLon = this.deg2rad(longitude2 - longitude1);

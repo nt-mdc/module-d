@@ -1,14 +1,18 @@
-<div class="d-flex flex-row justify-content-between position-sticky top-0 z-3 bg-white py-2">
+<div class="d-flex flex-row justify-content-between position-sticky top-0 z-3 bg-body py-2">
     <div class="w-50">
         <label for="basic-url" class="form-label">Beginning date</label>
-        <input type="date" class="form-control" name="begin" id="begin" (input)="onInputChange($event)">
+        <input type="date" class="form-control" name="begin" id="begin" [(ngModel)]="beginningDate"
+            (ngModelChange)="onDateChange()">
     </div>
     <div class="w-50">
         <label for="basic-url" class="form-label">Ending date</label>
-        <input type="date" class="form-control" name="end" id="end" (input)="onInputChange($event)">
-    </div>  
+        <input type="date" class="form-control" name="end" id="end" [(ngModel)]="endingDate"
+            (ngModelChange)="onDateChange()">
+    </div>
 </div>
-<div class="pt-3 overflow-auto d-flex flex-column gap-3 w-100">
-    <app-event-card *ngFor="let item of allEvents" [title]="item.title" [date]="item.date"
-        [image]="item.image"></app-event-card>
+<div class="h-100 overflow-auto pt-3" (scroll)="onScroll($event)">
+    <div class="overflow-auto d-flex flex-column gap-3 w-100" >
+        <app-event-card *ngFor="let item of allEvents" [title]="item.title" [date]="item.date"
+            [image]="item.image"></app-event-card>
+    </div>
 </div>

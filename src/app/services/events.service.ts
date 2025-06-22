@@ -7,12 +7,22 @@ import { Observable } from 'rxjs';
 })
 export class EventsService {
 
-  baseUrl: string = "http://localhost/module_d_api.php/events.json";
+  baseUrl: string = "http://localhost";
 
   constructor(private http: HttpClient) {}
 
-  get(beginDate?: string, endDate?: string): Observable<any> {
-    beginDate && endDate ? this.baseUrl += `?beginning_date=${beginDate}&ending_date=${endDate}` : null;
-    return this.http.get(this.baseUrl);
+  get(url?: any, beginDate?: any, endDate?: any): Observable<any> {
+    let requestUrl = url || "/module_d_api.php/events.json";
+    
+    if (!url && (beginDate && endDate)) {
+      const params = new URLSearchParams();
+      params.set("beginning_date", beginDate);
+      params.set("ending_date", endDate);
+
+      requestUrl += `?${params.toString()}`;
+    }
+
+    let finalUrl = this.baseUrl + requestUrl;    
+    return this.http.get(finalUrl);
   }
 }

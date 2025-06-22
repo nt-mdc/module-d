@@ -7,25 +7,27 @@ import { CarparksComponent } from './comps/carparks/carparks.component';
 import { EventsComponent } from './comps/events/events.component';
 import { WeatherComponent } from './comps/weather/weather.component';
 import { SettingComponent } from './comps/setting/setting.component';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
   imports: [NavbarComponent, HeaderComponent, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'base-module-d';
   component: any = CarparksComponent;
-  activePage: string = "carparks";
+  activePage: string = 'carparks';
 
+  constructor(private themeService: ThemeService) {}
 
   componentMap: { [key: string]: any } = {
     carparks: CarparksComponent,
     events: EventsComponent,
     weather: WeatherComponent,
-    setting: SettingComponent
-  }
+    setting: SettingComponent,
+  };
 
   loadComponent(name: string) {
     if (this.activePage === name) return;
@@ -33,5 +35,4 @@ export class AppComponent {
     this.component = this.componentMap[name] || null;
     this.activePage = name;
   }
-  
 }

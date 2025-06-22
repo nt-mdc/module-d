@@ -1,5 +1,5 @@
-<app-header></app-header>
-<div *ngIf="component" class="h-100 container flex-grow-1 overflow-auto px-4 position-relative">
+<app-header [view]="activePage"></app-header>
+<div *ngIf="component" class="h-100 container flex-grow-1 overflow-hidden px-4 py-3">
     <ng-container *ngComponentOutlet="component" ></ng-container>
 </div>
 <app-navbar (nav)="loadComponent($event)"></app-navbar>

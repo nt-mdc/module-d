@@ -1,1 +1,20 @@
-<p>setting works!</p>
+<div class="card w-100">
+    <div class="card-body">
+        <h5 class="card-title">Theme</h5>
+        <select class="form-select" [value]="themeService.get()" (change)="changeTheme($event)">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">Follow System's</option>
+        </select>
+    </div>
+</div>
+
+<div class="card w-100 mt-3">
+    <div class="card-body">
+        <h5 class="card-title">Carpark Sorting</h5>
+        <select class="form-select" [value]="carparkService.getMethod()" (change)="changeMethod($event)">
+            <option value="alphabet">Alphabet</option>
+            <option value="distance">Distance</option>
+        </select>
+    </div>
+</div>
