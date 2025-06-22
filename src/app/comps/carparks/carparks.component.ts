@@ -1,11 +1,12 @@
 import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CarparksService } from '../../services/carparks.service';
 import { CarparksCardComponent } from '../../cards/carparks-card/carparks-card.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CarparksSingleComponent } from '../../cards/carparks-single/carparks-single.component';
 import { PinningService } from '../../services/pinning.service';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, switchMap, takeUntil, timer } from 'rxjs';
 
 @Component({
   selector: 'app-carparks',
@@ -18,13 +19,15 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './carparks.component.html',
   styleUrl: './carparks.component.css',
 })
-export class CarparksComponent implements OnInit {
+export class CarparksComponent implements OnInit, OnDestroy {
   allCarparks: any[] = [];
   displayCarparks: any[] = [];
   lat = 0;
   long = 0;
 
   focusedCarpark: any = null;
+
+  private destroyTimer = new Subject<void>();
 
   constructor(
     private carparkService: CarparksService,
@@ -41,22 +44,38 @@ export class CarparksComponent implements OnInit {
         this.lat = parseFloat(urlLat);
         this.long = parseFloat(urlLong);
         console.log(this.lat, this.long);
-        
       } else {
         console.log(this.lat, this.long);
 
         this.getCurrentLocation();
       }
-
-      this.carparkService.get().subscribe((data) => {
-        this.allCarparks = Object.entries(data).map(([name, values]) => ({
-          name,
-          ...(values as any),
-          isPinned: this.pinningService.isPinned(name),
-        }));
-        this.sortCarparks();
-      });
     });
+
+    timer(0, 10000)
+      .pipe(
+        switchMap(() => this.carparkService.get()),
+        takeUntil(this.destroyTimer)
+      )
+      .subscribe((data) => {
+        this.updateCarparksData(data);
+      });
+  }
+
+  updateCarparksData(newData?: any) {
+    if (this.allCarparks.length === 0) {
+      this.allCarparks = Object.entries(newData).map(([name, values]) => ({
+        name,
+        ...(values as any),
+        isPinned: this.pinningService.isPinned(name),
+      }));
+    } else {
+      this.allCarparks.forEach((carpark) => {
+        if (newData[carpark.name]) {
+          carpark.availableSpaces = newData[carpark.name].availableSpaces;
+        }
+      });
+    }
+    this.sortCarparks();
   }
 
   sortCarparks() {
@@ -111,11 +130,10 @@ export class CarparksComponent implements OnInit {
   }
 
   getCurrentLocation() {
-    navigator.geolocation.getCurrentPosition(
-      (loc) => {
-        this.lat = loc.coords.latitude;
-        this.long = loc.coords.longitude;
-      });
+    navigator.geolocation.getCurrentPosition((loc) => {
+      this.lat = loc.coords.latitude;
+      this.long = loc.coords.longitude;
+    });
   }
 
   focusOnCarpark(carparkData: any) {
@@ -153,5 +171,10 @@ export class CarparksComponent implements OnInit {
 
   deg2rad(deg: any) {
     return deg * (Math.PI / 180);
+  }
+
+  ngOnDestroy(): void {
+    this.destroyTimer.next();
+    this.destroyTimer.complete();
   }
 }
